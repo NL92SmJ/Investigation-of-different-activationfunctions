@@ -79,6 +79,7 @@ Tested activation functions:
   * Swish
   * Tanh
   * Sigmoid
+    
 To understand and follow the thesis of the textbooks, I will first compare MAE and R² for each activation function. In the second step, I will compare: error distribution, loss progression, prediction vs reality, and residual plots.
 
 # Results
