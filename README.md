@@ -99,9 +99,20 @@ Theory says: MAE is more robust to outliers and gives a directly interpretable a
 Just by viewing MAE and R²-score for each activation-function, it can be postulated: for the chosen architecture and training configuration, ELU achieved the highest R² score. Sigmoid performed significantly worse than all other activation funtions. Interstingly, GELU did not outperform ReLU in this experiment, despite its popularity in modern deep learning architectures.
 The results suggest that activation-function performance is highly dependent on the dataset and network architecture.
 
-For a more detail analysis, I've plotted loss-progession, prediction vs. reality, residual-plots and error-histogram for each evaluated activation-function:
+The final evaluation is not based solely on MAE and R².
+To better understand model behaviour and generalization, the following diagnostic plots were analyzed:
+ * Loss progression
+ * Prediction vs. Reality
+ * Error distribution
+ * Residual plots
+These visualizations help identify overfitting, underfitting, systematic prediction bias and overall prediction quality.
 
 ## loss-progression
+For easy classification:
+ * ideal case: Both curves go down and stay close to each other --> model learns and generalizes well to unseen data.
+ * overfitting: training goes down, validation goes up: training keeps getting better; Validation is getting worse --> model is momorizing the training data
+ * underfitting: both curves go down, but on high level --> model is to simple or short trained
+
 <img width="800" height="500" alt="loss_tanh" src="https://github.com/user-attachments/assets/78f74647-f035-401d-a924-33cd0e823084" />
 <img width="800" height="500" alt="loss_swish" src="https://github.com/user-attachments/assets/41cd16cd-5e5e-4b6c-997a-f5ba973edebe" />
 <img width="800" height="500" alt="loss_sigmoid" src="https://github.com/user-attachments/assets/25b1b39f-c5d8-43ee-9c4a-271ca2929050" />
@@ -111,7 +122,15 @@ For a more detail analysis, I've plotted loss-progession, prediction vs. reality
 <img width="800" height="500" alt="loss_gelu" src="https://github.com/user-attachments/assets/33c2db54-1376-4e45-9bef-31d8ae101443" />
 <img width="800" height="500" alt="loss_elu" src="https://github.com/user-attachments/assets/e5d02bbb-aa84-46e8-bf37-85106da57988" />
 
+A good loss progression is characterized by decreasing training and validation loss curves that remain close to each other.
+A widening gap between both curves indicates overfitting, whereas consistently high losses suggest underfitting.
+
 ## prediction vs. reality
+For easy classification:
+ * the red line symbolizes the ideal line
+ * perfect model: all data-points on the diagonal --> "prediction equals reality."
+ * good model: all data-points lie close around the diagonal --> "prediction follow the real values with small deviations."
+ * bad model: large spread --> "predictions are inaccurate and deviate significantly from the real targets."
 
 <img width="600" height="600" alt="pred_tanh" src="https://github.com/user-attachments/assets/f1795b7a-f88f-41a3-9011-f8b4ee2d65a5" />
 <img width="600" height="600" alt="pred_swish" src="https://github.com/user-attachments/assets/49236655-710c-444b-9a8d-fe9a6f89989a" />
@@ -123,7 +142,11 @@ For a more detail analysis, I've plotted loss-progession, prediction vs. reality
 <img width="600" height="600" alt="pred_elu" src="https://github.com/user-attachments/assets/ce757244-e052-4533-a923-dca6d67d7afd" />
 
 ## error history
-
+For easy classification:
+ * ideal case: maximum at 0 --> The model overestimates and underestimates about equally often.
+ * shift case: maximum not at 0 --> The model has a systematic error (bias).
+ * very wide distribution case: big prediction errors.
+   
 <img width="800" height="400" alt="error_hist_tanh" src="https://github.com/user-attachments/assets/96e64fbb-4726-45ad-8abb-965dad9c7e86" />
 <img width="800" height="400" alt="error_hist_swish" src="https://github.com/user-attachments/assets/884f35df-d169-46b6-92e8-5056112aa127" />
 <img width="800" height="400" alt="error_hist_sigmoid" src="https://github.com/user-attachments/assets/478977fc-17c9-4ceb-bac8-d3af05125b2e" />
@@ -133,7 +156,15 @@ For a more detail analysis, I've plotted loss-progession, prediction vs. reality
 <img width="800" height="400" alt="error_hist_gelu" src="https://github.com/user-attachments/assets/d4bdcee7-be91-4c80-9f9a-edd264498e00" />
 <img width="800" height="400" alt="error_hist_elu" src="https://github.com/user-attachments/assets/5111f210-20c6-40fd-a84f-5ba12c7545cb" />
 
+A well-performing model should produce a centered error distribution around zero.
+Wide distributions indicate larger prediction errors, while shifted distributions may reveal systematic prediction bias.
+
 ## residual-plot
+For easy classification:
+ * good case: random scatter around 0 / no patterns. --> interpretation: no systematic error pattern.
+ * bad case 1 "curves" --> Model didn't understand the context.
+ * bad case 2 "funnel shapes" -->  Errors get bigger as the values increase.
+ * bad case 3 "cluster" --> There are groups in the dataset that are treated differently.
 
 <img width="800" height="400" alt="residual_tanh" src="https://github.com/user-attachments/assets/2a4d5f2c-e03a-4f0a-b32f-a13a9e350a4a" />
 <img width="800" height="400" alt="residual_swish" src="https://github.com/user-attachments/assets/1760e943-a352-4c3e-8f2e-33151ba4559e" />
@@ -144,9 +175,34 @@ For a more detail analysis, I've plotted loss-progession, prediction vs. reality
 <img width="800" height="400" alt="residual_gelu" src="https://github.com/user-attachments/assets/418eb1c7-7635-4fd6-aacf-4cdb652b11b9" />
 <img width="800" height="400" alt="residual_elu" src="https://github.com/user-attachments/assets/b1ef1a58-9f8f-4363-9fde-4359429febd2" />
 
-
-
+# Interpretation
+The conducted experiments show that the choice of activation function can significantly influence the performance of a neural network, even when all other training parameters remain unchanged.
+ELU achieved the highest R² score (0.849) and the lowest MAE (0.259), indicating the best overall prediction quality among the tested activation functions.
+The prediction-versus-reality plots reveal that ELU follows the ideal prediction line considerably better than Sigmoid. While ELU is able to reproduce the overall trend of the target values, the Sigmoid-based model compresses predictions into a narrow value range and fails to represent larger target values accurately.
+This behavior is also visible in the residual plots. The residuals of the ELU model are distributed relatively randomly around zero, suggesting that no strong systematic prediction errors are present. In contrast, the Sigmoid model exhibits a clear pattern: prediction errors become increasingly negative for larger predictions, indicating a systematic underestimation of larger target values.
+The error histograms further support these observations. ELU produces a narrower error distribution centered around zero, whereas Sigmoid shows a broader distribution with larger negative prediction errors.
+Overall, the results suggest that modern activation functions such as ELU and SeLU are better suited for this regression task than the classical Sigmoid function.
 
 # Next steps / experiments
-  * Change of layers of the model
-  * change of random_state --> 10 runs -->  average --> standard deviation
+
+This experiment focused on the influence of activation functions while keeping all other parameters constant.
+Future investigations could examine additional factors that affect neural network performance:
+
+## Network Architecture
+ * Compare shallow and deep networks
+ * Compare narrow and wide network structures
+ * Evaluate symmetric architectures (e.g. 32-64-32) versus asymmetric architectures (e.g. 32-64)
+## Optimizers
+ * Compare Adam, SGD and RMSProp
+ * Analyze convergence speed and prediction quality
+ * Batch Size
+ * Investigate the impact of different batch sizes on training stability and model performance
+## Learning Rate
+ * Evaluate how learning rate tuning influences convergence and final prediction accuracy
+## Regularization
+ * Introduce Dropout layers to study their effect on overfitting and generalization
+## Classification Task
+ * Perform a similar comparison using the original Iris classification problem instead of a regression task
+
+The long-term goal is to identify which hyperparameters have the strongest influence on model performance and whether the observed activation-function ranking remains stable under different network configurations.
+
