@@ -1,7 +1,7 @@
 # Investigation-of-different-activationfunctions
 The goal of this experiment was to investigate the impact of different activation functions on the prediction quality of a neural network in a regression task.
 
-# Motivation & Expaction
+# Motivation & Expactation
 While learning 'machine learning and AI', I noticed that many books and tutorials describe activation funtions theoretically,  but practical comparisons are often missing.
 
 Activation functions are a fundamental part of neural networks. The theory behind it, can be found in several sources by own researches.
